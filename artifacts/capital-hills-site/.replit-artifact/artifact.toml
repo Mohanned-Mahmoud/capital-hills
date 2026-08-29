@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Capital Hills Developments"
+description = "A responsive real-estate discovery website inspired by the Capital Hills mobile concept, with a premium landing experience, project browsing, filters, saved projects, and a detailed property view."
+version = "1.0.0"
+id = "artifacts/capital-hills-site"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24574
+
+[services.development]
+run = "pnpm --filter @workspace/capital-hills-site run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/capital-hills-site", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/capital-hills-site/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24574"
+BASE_PATH = "/"

@@ -1,0 +1,11 @@
+{
+  "buildCommand": "pnpm --filter @workspace/capital-hills-site run build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "artifacts/capital-hills-site/dist/public",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
