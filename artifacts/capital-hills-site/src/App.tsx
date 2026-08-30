@@ -115,6 +115,16 @@ const projects: Project[] = [
   },
 ];
 
+const testimonials = [
+  { id: 1, name: 'Ahmed M.', role: 'Homeowner', quote: 'The attention to detail in the finishing is unmatched. Highly recommended.' },
+  { id: 2, name: 'Sarah K.', role: 'Investor', quote: 'Capital Hills offers the best ROI I have seen in the area. Great location.' }
+];
+
+const articles = [
+  { id: 1, title: 'The Future of Real Estate in New Cairo', date: 'Aug 20, 2026', readTime: '5 min' },
+  { id: 2, title: 'Why Invest in Commercial Properties Now', date: 'Aug 18, 2026', readTime: '8 min' }
+];
+
 const navItems: { id: View; label: string; icon: typeof HomeIcon }[] = [
   { id: 'home', label: 'Home', icon: HomeIcon },
   { id: 'projects', label: 'Projects', icon: LayoutGrid },
@@ -287,6 +297,61 @@ function CategoryPills({ category, setCategory }: { category: Category; setCateg
   );
 }
 
+function TestimonialsSection() {
+  return (
+    <section className="animate-rise delay-4 lg:col-span-2 mt-4">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-xs font-semibold text-[#4b1e2d]">Kind words</p>
+      </div>
+      <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+        {testimonials.map((test) => (
+          <div key={test.id} className="min-w-[260px] max-w-[320px] rounded-[18px] border border-[#4b1e2d]/10 bg-[#faf6ef] p-5 flex-shrink-0 transition-transform hover:-translate-y-1">
+            <div className="flex text-[#c9a36a] mb-3">
+              <Sparkles size={14} />
+              <Sparkles size={14} />
+              <Sparkles size={14} />
+              <Sparkles size={14} />
+              <Sparkles size={14} />
+            </div>
+            <p className="serif text-lg leading-tight text-[#4b1e2d] mb-4">"{test.quote}"</p>
+            <div>
+              <p className="text-[11px] font-semibold text-[#4b1e2d]">{test.name}</p>
+              <p className="text-[9px] text-[#4b1e2d]/50">{test.role}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function JournalSection({ onBrowse }: { onBrowse: () => void }) {
+  return (
+    <section className="animate-rise delay-5 lg:col-span-2 mt-2">
+      <div className="mb-3 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold text-[#4b1e2d]">Journal</p>
+          <p className="mt-1 text-[10px] text-[#4b1e2d]/45">Insights and updates.</p>
+        </div>
+        <button type="button" onClick={onBrowse} className="text-[10px] text-[#4b1e2d]/55 hover:text-[#4b1e2d]">
+          Read all <ArrowRight size={12} className="ml-1 inline" />
+        </button>
+      </div>
+      <div className="grid gap-3">
+        {articles.map((article) => (
+          <div key={article.id} className="flex items-center justify-between rounded-[16px] bg-[#eadfce]/40 p-4 hover:bg-[#eadfce]/70 transition-colors cursor-pointer">
+            <div>
+              <p className="text-xs font-semibold text-[#4b1e2d]">{article.title}</p>
+              <p className="text-[9px] text-[#4b1e2d]/55 mt-1">{article.date} · {article.readTime} read</p>
+            </div>
+            <ChevronRight size={14} className="text-[#4b1e2d]/50" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function HomeView({ onOpenProject, savedIds, onToggleSaved, onBrowse }: { onOpenProject: (project: Project) => void; savedIds: string[]; onToggleSaved: (id: string) => void; onBrowse: () => void }) {
   return (
     <div className="space-y-6 pb-4 md:space-y-8 lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-8 lg:space-y-0 lg:pb-8">
@@ -334,6 +399,8 @@ function HomeView({ onOpenProject, savedIds, onToggleSaved, onBrowse }: { onOpen
           ))}
         </div>
       </section>
+      <TestimonialsSection />
+      <JournalSection onBrowse={onBrowse} />
     </div>
   );
 }
