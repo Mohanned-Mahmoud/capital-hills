@@ -460,26 +460,115 @@ function ProfileView() {
 }
 
 function DetailView({ project, onBack, saved, onToggleSaved, onFeedback }: { project: Project; onBack: () => void; saved: boolean; onToggleSaved: () => void; onFeedback: (message: string) => void }) {
-  return <div className="min-h-full bg-[#f6f0e4]"><div className="relative h-[48dvh] min-h-[350px] max-h-[600px] overflow-hidden"><img src={project.image} alt={`${project.name} exterior`} className="size-full object-cover object-center" /><div className="absolute inset-0 bg-gradient-to-b from-[#26131b]/40 via-transparent to-[#26131b]/65" /><div className="absolute left-5 right-5 top-5 flex items-center justify-between md:left-10 md:right-10 md:top-8"><button type="button" data-testid="button-detail-back" onClick={onBack} aria-label="Back to projects" className="grid size-10 place-items-center rounded-full bg-[#f6f0e4]/90 text-[#4b1e2d] hover:bg-[#fffaf2]"><ArrowLeft size={17} /></button><div className="flex gap-2"><button type="button" data-testid="button-detail-save" onClick={onToggleSaved} aria-label={saved ? 'Remove from saved' : 'Save project'} className={`grid size-10 place-items-center rounded-full ${saved ? 'bg-[#c9a36a] text-[#4b1e2d]' : 'bg-[#f6f0e4]/90 text-[#4b1e2d]'}`}><Heart size={17} fill={saved ? 'currentColor' : 'none'} /></button><button type="button" data-testid="button-detail-share" onClick={() => { navigator.clipboard.writeText(window.location.href); onFeedback('Link copied to clipboard!'); }} aria-label="Share project" className="grid size-10 place-items-center rounded-full bg-[#f6f0e4]/90 text-[#4b1e2d]"><Send size={16} /></button></div></div><div className="absolute bottom-6 left-5 right-5 text-[#f6f0e4] md:left-10 md:right-10"><p className="mono text-[9px] uppercase tracking-[.2em] opacity-75">New Cairo · 01 / 12</p><h1 className="serif mt-2 text-5xl leading-none md:text-7xl">{project.name}</h1></div></div><div className="mx-auto max-w-5xl px-5 pb-32 pt-7 md:px-10"><div className="flex flex-col justify-between gap-5 border-b border-[#4b1e2d]/12 pb-6 md:flex-row md:items-start"><div><p className="mono text-[9px] uppercase tracking-[.18em] text-[#4b1e2d]/50">{project.status}</p><p className="mt-1 text-sm text-[#4b1e2d]/60">Modern living in a well-connected community.</p></div><div className="md:text-right"><p className="text-[10px] text-[#4b1e2d]/50">From</p><p className="serif text-3xl text-[#4b1e2d]">{project.price}</p></div></div><div className="grid grid-cols-4 gap-3 border-b border-[#4b1e2d]/12 py-6 text-center"><div><Building2 size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.type}</p></div><div><LayoutGrid size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.area}</p></div><div><KeyRound size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.beds}</p></div><div><BathIcon /><p className="text-[10px] text-[#4b1e2d]">3 Baths</p></div></div><div className="flex gap-6 border-b border-[#4b1e2d]/12 py-4 text-[10px] text-[#4b1e2d]/50"><span className="border-b-2 border-[#4b1e2d] pb-4 font-semibold text-[#4b1e2d]">Overview</span><span>Details</span><span>Location</span><span>Payment</span></div><div className="grid gap-10 py-8 md:grid-cols-[1fr_280px]"><div><h2 className="serif text-3xl text-[#4b1e2d]">A place with room to breathe.</h2><p className="mt-4 max-w-[520px] text-sm leading-7 text-[#4b1e2d]/65">La Colina East is a thoughtfully planned community in the heart of New Cairo, offering modern homes, green spaces, and a connected lifestyle. Every detail is considered for the way life is lived now, and the years ahead.</p><button type="button" data-testid="button-read-more" onClick={() => onFeedback('Full project overview opened.')} className="mt-5 flex items-center gap-2 text-xs font-semibold text-[#4b1e2d]">Read more <ArrowRight size={14} /></button>
-        {project.gallery && (
-          <div className="mt-12 border-t border-[#4b1e2d]/10 pt-8">
-            <h3 className="serif text-2xl text-[#4b1e2d] mb-5">Gallery</h3>
-            <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-3 h-[450px]">
-              <div className="h-full overflow-hidden rounded-[20px] shadow-[0_4px_14px_rgba(75,30,45,.06)]">
-                <img src={project.gallery[0]} alt={`${project.name} main`} className="size-full object-cover transition-transform duration-700 hover:scale-105" />
-              </div>
-              <div className="hidden md:grid grid-rows-2 gap-3 h-full">
-                <div className="h-full overflow-hidden rounded-[20px] shadow-[0_4px_14px_rgba(75,30,45,.06)]">
-                  <img src={project.gallery[1]} alt={`${project.name} exterior`} className="size-full object-cover transition-transform duration-700 hover:scale-105" />
+  const [activeTab, setActiveTab] = useState<'Overview' | 'Details' | 'Location' | 'Payment'>('Overview');
+  return (
+    <div className="min-h-full bg-[#f6f0e4]">
+      <div className="relative h-[48dvh] min-h-[350px] max-h-[600px] overflow-hidden">
+        <img src={project.image} alt={`${project.name} exterior`} className="size-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#26131b]/40 via-transparent to-[#26131b]/65" />
+        <div className="absolute left-5 right-5 top-5 flex items-center justify-between md:left-10 md:right-10 md:top-8">
+          <button type="button" data-testid="button-detail-back" onClick={onBack} aria-label="Back to projects" className="grid size-10 place-items-center rounded-full bg-[#f6f0e4]/90 text-[#4b1e2d] hover:bg-[#fffaf2]"><ArrowLeft size={17} /></button>
+          <div className="flex gap-2">
+            <button type="button" data-testid="button-detail-save" onClick={onToggleSaved} aria-label={saved ? 'Remove from saved' : 'Save project'} className={`grid size-10 place-items-center rounded-full ${saved ? 'bg-[#c9a36a] text-[#4b1e2d]' : 'bg-[#f6f0e4]/90 text-[#4b1e2d]'}`}><Heart size={17} fill={saved ? 'currentColor' : 'none'} /></button>
+            <button type="button" data-testid="button-detail-share" onClick={() => { navigator.clipboard.writeText(window.location.href); onFeedback('Link copied to clipboard!'); }} aria-label="Share project" className="grid size-10 place-items-center rounded-full bg-[#f6f0e4]/90 text-[#4b1e2d]"><Send size={16} /></button>
+          </div>
+        </div>
+        <div className="absolute bottom-6 left-5 right-5 text-[#f6f0e4] md:left-10 md:right-10">
+          <p className="mono text-[9px] uppercase tracking-[.2em] opacity-75">New Cairo · 01 / 12</p>
+          <h1 className="serif mt-2 text-5xl leading-none md:text-7xl">{project.name}</h1>
+        </div>
+      </div>
+      <div className="mx-auto max-w-5xl px-5 pb-32 pt-7 md:px-10">
+        <div className="flex flex-col justify-between gap-5 border-b border-[#4b1e2d]/12 pb-6 md:flex-row md:items-start">
+          <div>
+            <p className="mono text-[9px] uppercase tracking-[.18em] text-[#4b1e2d]/50">{project.status}</p>
+            <p className="mt-1 text-sm text-[#4b1e2d]/60">Modern living in a well-connected community.</p>
+          </div>
+          <div className="md:text-right">
+            <p className="text-[10px] text-[#4b1e2d]/50">From</p>
+            <p className="serif text-3xl text-[#4b1e2d]">{project.price}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-3 border-b border-[#4b1e2d]/12 py-6 text-center">
+          <div><Building2 size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.type}</p></div>
+          <div><LayoutGrid size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.area}</p></div>
+          <div><KeyRound size={17} className="mx-auto mb-2 text-[#c9a36a]" /><p className="text-[10px] text-[#4b1e2d]">{project.beds}</p></div>
+          <div><BathIcon /><p className="text-[10px] text-[#4b1e2d]">3 Baths</p></div>
+        </div>
+        <div className="flex gap-6 border-b border-[#4b1e2d]/12 py-4 text-[10px] text-[#4b1e2d]/50">
+          {(['Overview', 'Details', 'Location', 'Payment'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? 'border-b-2 border-[#4b1e2d] pb-4 font-semibold text-[#4b1e2d]' : 'pb-4 hover:text-[#4b1e2d]'} transition-colors`}>{tab}</button>
+          ))}
+        </div>
+
+        {activeTab === 'Overview' && (
+          <div className="grid gap-10 py-8 md:grid-cols-[1fr_280px]">
+            <div>
+              <h2 className="serif text-3xl text-[#4b1e2d]">A place with room to breathe.</h2>
+              <p className="mt-4 max-w-[520px] text-sm leading-7 text-[#4b1e2d]/65">La Colina East is a thoughtfully planned community in the heart of New Cairo, offering modern homes, green spaces, and a connected lifestyle. Every detail is considered for the way life is lived now, and the years ahead.</p>
+              {project.gallery && (
+                <div className="mt-12 border-t border-[#4b1e2d]/10 pt-8">
+                  <h3 className="serif text-2xl text-[#4b1e2d] mb-5">Gallery</h3>
+                  <div className="columns-1 sm:columns-2 gap-4 space-y-4">
+                    {project.gallery.map((img, i) => (
+                      <div key={i} className="break-inside-avoid overflow-hidden rounded-[20px] shadow-[0_4px_14px_rgba(75,30,45,.06)]">
+                        <img src={img} alt={`${project.name} gallery ${i + 1}`} className="w-full h-auto object-cover transition-transform duration-700 hover:scale-105" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="h-full overflow-hidden rounded-[20px] shadow-[0_4px_14px_rgba(75,30,45,.06)]">
-                  <img src={project.gallery[2]} alt={`${project.name} interior`} className="size-full object-cover transition-transform duration-700 hover:scale-105" />
-                </div>
+              )}
+            </div>
+            <div className="rounded-[20px] bg-[#eadfce]/70 p-5">
+              <p className="mono text-[9px] uppercase tracking-[.16em] text-[#4b1e2d]/50">Good to know</p>
+              <div className="mt-4 space-y-3 text-xs text-[#4b1e2d]/70">
+                <p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Phase 1 selling now</p>
+                <p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Limited units available</p>
+                <p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Flexible payment plans</p>
               </div>
             </div>
           </div>
         )}
-</div><div className="rounded-[20px] bg-[#eadfce]/70 p-5"><p className="mono text-[9px] uppercase tracking-[.16em] text-[#4b1e2d]/50">Good to know</p><div className="mt-4 space-y-3 text-xs text-[#4b1e2d]/70"><p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Phase 1 selling now</p><p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Limited units available</p><p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Flexible payment plans</p></div></div></div><div className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#4b1e2d]/10 bg-[#f6f0e4]/95 px-5 py-4 backdrop-blur-md md:static md:border-0 md:bg-transparent md:p-0"><div className="mx-auto flex max-w-5xl gap-3"><button type="button" data-testid="button-contact" onClick={() => window.open('https://wa.me/', '_blank')} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[#4b1e2d]/20 bg-[#faf6ef] text-xs font-semibold text-[#4b1e2d] hover:bg-[#eadfce]"><Phone size={15} /> Contact</button><button type="button" data-testid="button-book-viewing" onClick={() => window.location.href = `mailto:info@capitalhills.com?subject=Book a Viewing for ${project.name}`} className="flex h-12 flex-[1.5] items-center justify-center gap-2 rounded-full bg-[#4b1e2d] text-xs font-semibold text-[#f6f0e4] hover:bg-[#64283d]"><CalendarDays size={15} /> Book a Viewing</button></div></div></div></div>;
+        {activeTab === 'Details' && (
+          <div className="py-8">
+            <h2 className="serif text-3xl text-[#4b1e2d] mb-4">Project Details</h2>
+            <ul className="space-y-4 text-sm text-[#4b1e2d]/70">
+              <li><strong className="block text-xs uppercase tracking-wider text-[#4b1e2d]/50">Property Type</strong> {project.type}</li>
+              <li><strong className="block text-xs uppercase tracking-wider text-[#4b1e2d]/50">Area</strong> {project.area}</li>
+              <li><strong className="block text-xs uppercase tracking-wider text-[#4b1e2d]/50">Bedrooms</strong> {project.beds}</li>
+              <li><strong className="block text-xs uppercase tracking-wider text-[#4b1e2d]/50">Status</strong> {project.status}</li>
+            </ul>
+          </div>
+        )}
+        {activeTab === 'Location' && (
+          <div className="py-8">
+            <h2 className="serif text-3xl text-[#4b1e2d] mb-4">Location</h2>
+            <p className="text-sm text-[#4b1e2d]/70 mb-4">{project.location}</p>
+            <div className="h-[250px] w-full max-w-2xl rounded-[20px] bg-[#eadfce]/45 overflow-hidden relative border border-[#4b1e2d]/10 flex items-center justify-center">
+              <MapPin size={32} className="text-[#c9a36a]" />
+            </div>
+          </div>
+        )}
+        {activeTab === 'Payment' && (
+          <div className="py-8">
+            <h2 className="serif text-3xl text-[#4b1e2d] mb-4">Payment Plans</h2>
+            <div className="rounded-[20px] bg-[#eadfce]/70 p-5 space-y-3 text-sm text-[#4b1e2d]/70 max-w-md">
+              <p className="flex items-center gap-3"><Check size={16} className="text-[#c9a36a]" /> 10% Down payment</p>
+              <p className="flex items-center gap-3"><Check size={16} className="text-[#c9a36a]" /> Up to 8 years installments</p>
+              <p className="flex items-center gap-3"><Check size={16} className="text-[#c9a36a]" /> 0% Interest</p>
+            </div>
+          </div>
+        )}
+
+        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#4b1e2d]/10 bg-[#f6f0e4]/95 px-5 py-4 backdrop-blur-md md:static md:border-0 md:bg-transparent md:p-0">
+          <div className="mx-auto flex max-w-5xl gap-3">
+            <button type="button" data-testid="button-contact" onClick={() => window.open('https://wa.me/', '_blank')} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[#4b1e2d]/20 bg-[#faf6ef] text-xs font-semibold text-[#4b1e2d] hover:bg-[#eadfce]"><Phone size={15} /> Contact</button>
+            <button type="button" data-testid="button-book-viewing" onClick={() => window.location.href = `mailto:info@capitalhills.com?subject=Book a Viewing for ${project.name}`} className="flex h-12 flex-[1.5] items-center justify-center gap-2 rounded-full bg-[#4b1e2d] text-xs font-semibold text-[#f6f0e4] hover:bg-[#64283d]"><CalendarDays size={15} /> Book a Viewing</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function BathIcon() {
