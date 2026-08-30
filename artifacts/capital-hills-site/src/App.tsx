@@ -169,6 +169,17 @@ function Landing({ onStart }: { onStart: () => void }) {
     swipeStartY.current = null;
   };
 
+  const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+    swipeStartY.current = event.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
+    if (swipeStartY.current !== null && swipeStartY.current - event.changedTouches[0].clientY > 55) {
+      enterApp();
+    }
+    swipeStartY.current = null;
+  };
+
   const handleWheel = (event: React.WheelEvent<HTMLElement>) => {
     if (event.deltaY > 0) {
       enterApp();
@@ -180,6 +191,8 @@ function Landing({ onStart }: { onStart: () => void }) {
       className={`grain lock-screen min-h-[100dvh] bg-[#4b1e2d] text-[#f6f0e4] touch-none ${isLeaving ? 'lock-screen-exit' : ''}`}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') enterApp();
