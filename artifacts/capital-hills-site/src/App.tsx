@@ -177,7 +177,7 @@ function Landing({ onStart }: { onStart: () => void }) {
 
   return (
     <main
-      className={`grain lock-screen min-h-[100dvh] bg-[#4b1e2d] text-[#f6f0e4] ${isLeaving ? 'lock-screen-exit' : ''}`}
+      className={`grain lock-screen min-h-[100dvh] bg-[#4b1e2d] text-[#f6f0e4] touch-none ${isLeaving ? 'lock-screen-exit' : ''}`}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onWheel={handleWheel}
