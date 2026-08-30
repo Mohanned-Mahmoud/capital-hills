@@ -12,6 +12,7 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   ChevronUp,
   CircleUserRound,
@@ -461,6 +462,7 @@ function ProfileView() {
 
 function DetailView({ project, onBack, saved, onToggleSaved, onFeedback }: { project: Project; onBack: () => void; saved: boolean; onToggleSaved: () => void; onFeedback: (message: string) => void }) {
   const [activeTab, setActiveTab] = useState<'Overview' | 'Details' | 'Location' | 'Payment'>('Overview');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   return (
     <div className="min-h-full bg-[#f6f0e4]">
       <div className="relative h-[48dvh] min-h-[350px] max-h-[600px] overflow-hidden">
@@ -509,17 +511,17 @@ function DetailView({ project, onBack, saved, onToggleSaved, onFeedback }: { pro
               {project.gallery && (
                 <div className="mt-12 border-t border-[#4b1e2d]/10 pt-8">
                   <h3 className="serif text-2xl text-[#4b1e2d] mb-5">Gallery</h3>
-                  <div className="columns-1 sm:columns-2 gap-4 space-y-4">
+                  <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
                     {project.gallery.map((img, i) => (
-                      <div key={i} className="break-inside-avoid overflow-hidden rounded-[20px] shadow-[0_4px_14px_rgba(75,30,45,.06)]">
-                        <img src={img} alt={`${project.name} gallery ${i + 1}`} className="w-full h-auto object-cover transition-transform duration-700 hover:scale-105" />
-                      </div>
+                      <button key={i} type="button" onClick={() => setLightboxIndex(i)} className="shrink-0 w-[85%] md:w-[60%] snap-center rounded-[20px] overflow-hidden shadow-[0_4px_14px_rgba(75,30,45,.06)]">
+                        <img src={img} alt={`${project.name} gallery ${i + 1}`} className="w-full aspect-[4/3] object-cover transition-transform duration-700 hover:scale-105" />
+                      </button>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-            <div className="rounded-[20px] bg-[#eadfce]/70 p-5">
+            <div className="rounded-[20px] bg-[#eadfce]/70 p-5 self-start">
               <p className="mono text-[9px] uppercase tracking-[.16em] text-[#4b1e2d]/50">Good to know</p>
               <div className="mt-4 space-y-3 text-xs text-[#4b1e2d]/70">
                 <p className="flex gap-2"><Check size={14} className="shrink-0 text-[#c9a36a]" /> Phase 1 selling now</p>
@@ -567,6 +569,26 @@ function DetailView({ project, onBack, saved, onToggleSaved, onFeedback }: { pro
           </div>
         </div>
       </div>
+
+      {lightboxIndex !== null && project.gallery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#26131b]/95 backdrop-blur-sm">
+          <button type="button" onClick={() => setLightboxIndex(null)} className="absolute top-6 right-6 text-[#f6f0e4] hover:text-[#c9a36a]"><X size={32} /></button>
+          
+          <button type="button" onClick={() => setLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : project.gallery!.length - 1))} className="absolute left-4 md:left-10 text-[#f6f0e4] hover:text-[#c9a36a] p-2">
+            <ChevronLeft size={36} />
+          </button>
+
+          <img src={project.gallery[lightboxIndex]} className="max-h-[85vh] max-w-[85vw] object-contain" />
+          
+          <button type="button" onClick={() => setLightboxIndex((prev) => (prev! < project.gallery!.length - 1 ? prev! + 1 : 0))} className="absolute right-4 md:right-10 text-[#f6f0e4] hover:text-[#c9a36a] p-2">
+            <ChevronRight size={36} />
+          </button>
+          
+          <div className="absolute bottom-6 left-0 right-0 text-center text-[#f6f0e4] text-sm mono tracking-widest">
+            {lightboxIndex + 1} / {project.gallery.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
