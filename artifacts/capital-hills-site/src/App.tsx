@@ -554,8 +554,16 @@ function DetailView({ project, onBack, saved, onToggleSaved, onFeedback }: { pro
           <div className="py-8">
             <h2 className="serif text-3xl text-[#4b1e2d] mb-4">Location</h2>
             <p className="text-sm text-[#4b1e2d]/70 mb-4">{project.location}</p>
-            <div className="h-[250px] w-full max-w-2xl rounded-[20px] bg-[#eadfce]/45 overflow-hidden relative border border-[#4b1e2d]/10 flex items-center justify-center">
-              <MapPin size={32} className="text-[#c9a36a]" />
+            <div className="h-[300px] w-full max-w-2xl rounded-[20px] bg-[#eadfce]/45 overflow-hidden relative border border-[#4b1e2d]/10">
+              <iframe
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(project.name + ' ' + project.location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
         )}
