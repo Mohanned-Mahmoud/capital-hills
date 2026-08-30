@@ -162,11 +162,18 @@ function Landing({ onStart }: { onStart: () => void }) {
     swipeStartY.current = null;
   };
 
+  const handleWheel = (event: React.WheelEvent<HTMLElement>) => {
+    if (event.deltaY > 0) {
+      enterApp();
+    }
+  };
+
   return (
     <main
       className={`grain lock-screen min-h-[100dvh] bg-[#4b1e2d] text-[#f6f0e4] ${isLeaving ? 'lock-screen-exit' : ''}`}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onWheel={handleWheel}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') enterApp();
       }}
